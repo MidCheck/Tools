@@ -176,7 +176,26 @@ class RootfsDownloader:
         if zfile is not None:
             self.zipfile.close()
         print("Finish download!")
-    
+
+    def download_disk(self, remotepath = '/dev/sda', localpath = './sda.img', begin = 0, count = 1):
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(hostname = self.ip, port = self.port, 
+                    username = self.username, password = self.password)
+        command = "dd if=" + remotepath
+        command += " of=" + localpath
+        command += " skip=" + str(begin)
+        command += " count=" + str(count)
+
+        stdin, stdout, stderr = ssh.exec_command(command)
+        res = stdout.read()
+        ssh.close()
+
+        print(res)
+
+
+
+        
 if __name__ == '__main__':
     # parse arguments
     parser = argparse.ArgumentParser(
@@ -215,6 +234,16 @@ if __name__ == '__main__':
 
     parser.add_argument('-e', '--errlog', help = 'log the error log, if not specified, will redirect to /dev/null')
 
+    parser.add_argument('-D', '--dd', help = "download remote hard disk via commmand 'dd'")
+
+    parser.add_argument('-b', '--begin',
+            default = 0,
+            help = "if -D mode is specified, specify whick block to start downloading from hard disk")
+
+    parser.add_argument('-c', '--count',
+            default = 1,
+            help = "if -D mode is specified, specify how many bocks should be downloaded")
+
     args = parser.parse_args()
     if args.password is None:
         password = getpass.getpass("password:")
@@ -225,4 +254,8 @@ if __name__ == '__main__':
             args.login, password, 
             args.hostip, args.port,
             errlog = args.errlog)
-    rfs.download(args.remote, args.directory, zfile = args.zipfile)
+
+    if args.dd is None:
+        rfs.download(args.remote, args.directory, zfile = args.zipfile)
+    else:
+        rfs.download(args.remote, args.directory, args.begin, args.count)
