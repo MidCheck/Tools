@@ -4,7 +4,7 @@
 #
 
 import requests
-url = "https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts"
+url = "https://raw.githubusercontent.com/googlehosts/hosts/master/hosts-files/hosts"
 resp = requests.get(url)
 
 outfile = open("hosts", "w")
