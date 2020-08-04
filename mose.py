@@ -33,11 +33,13 @@ class MorseCoder:
     def get_decode_alphabet(self): 
         return self.__decode_alphabet 
 
+
+
 if __name__ == '__main__': 
     mc = MorseCoder() 
     # plaintext = "abcdABCD12345678" 
     plaintext = sys.argv[1] if(len(sys.argv) > 1) else input();
-    morsecode = mc.encode(plaintext) 
+    morsecode = mc.encode(plaintext)
     print(morsecode) 
     #morsecode = ".. .-.. --- ...- . - .- -. . -.. .- .-. .. ... .-" 
     #plaintext = mc.decode(morsecode) 
